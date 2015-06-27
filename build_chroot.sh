@@ -14,6 +14,33 @@
 #    ( http://www.fsf.org/licenses/gpl.txt )
 #####################################################################
 
+#while getopts a:u:p:s:c:f option
+#do
+#case "${option}"
+#in
+#a) ACTION=${OPTARG};;
+#u) USER=${OPTARG};;
+#p) PASSWROD=${OPTARG};;
+#s) SHELL=${OPTARG};;
+#c) CHROOT=${OPTARG};;
+#f) APPS=${OPTARG};;
+#esac
+#done
+
+#case $ACTION in
+#    initchroot) echo "$ACTION";;
+#    removechroot) echo "$ACTION";;
+#    jailuser) echo "$ACTION";;
+#    freeuser) echo "$ACTION";;
+#    deleuser) echo "$ACTION";;
+#    update) echo "$ACTION";;
+#esac
+
+
+
+#echo -e "exiting"
+#exit 1
+
 # first Release: 2004-07-30
 RELEASE="2008-04-26"
 
@@ -95,6 +122,7 @@ if [ -z "$1" ] ; then
   echo " (this deletes all Users' files!)"
   echo " # rm -f /bin/chroot-shell"
   echo " manually delete the User's line from /etc/sudoers"
+  echo " or delete the username form /etc/sudoers.d/"
   exit
 fi
 
@@ -307,6 +335,7 @@ echo
 #fi
 
 # Creating necessary devices
+# /dev/random was needed for git
 [ -r $JAILPATH/dev/random ] || mknod $JAILPATH/dev/random c 1 8
 [ -r $JAILPATH/dev/urandom ] || mknod $JAILPATH/dev/urandom c 1 9
 [ -r $JAILPATH/dev/null ]    || mknod -m 666 $JAILPATH/dev/null    c 1 3
@@ -319,8 +348,20 @@ if [ "$1" != "update" ]; then
 
 # Modifiy /etc/sudoers to enable chroot-ing for users
 # must be removed by hand if account is deleted
+
 echo "Modifying /etc/sudoers"
-echo "$CHROOT_USERNAME       ALL=NOPASSWD: `which chroot`, /bin/su - $CHROOT_USERNAME" >> /etc/sudoers
+echo "Backing up /etc/sudoers"
+cp /etc/sudoers /etc/sudoers.bak
+
+if [ -d "/etc/sudoers.d" ]; then
+  sed -i 's/#includedir \/etc\/sudoers\.d/includedir \/etc\/sudoers\.d/g' /etc/sudoers
+  echo "Addinng '$CHROOT_USERNAME' to /etc/sudoers.d/$CHROOT_USERNAME"
+  echo "$CHROOT_USERNAME       ALL=NOPASSWD: `which chroot`, /bin/su - $CHROOT_USERNAME" >> "/etc/sudoers.d/$CHROOT_USERNAME"
+  echo "Setting permissions to 0440 on /etc/sudoers.d/$CHROOT_USERNAME"
+  echo "chmod 0440 /etc/sudoers.d/$CHROOT_USERNAME"
+else
+  echo "$CHROOT_USERNAME       ALL=NOPASSWD: `which chroot`, /bin/su - $CHROOT_USERNAME" >> /etc/sudoers
+fi
 
 # Define HomeDir for simple referencing
 HOMEDIR="$JAILPATH/users/$CHROOT_USERNAME"
