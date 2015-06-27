@@ -15,8 +15,8 @@
 #####################################################################
 
 # first Release: 2004-07-30
-# RELEASE="2008-04-26"
-RELEASE="2015-06-27"
+RELEASE="2008-04-26"
+
 #
 # The latest version of the script is available at
 #   http://www.fuschlberger.net/programs/ssh-scp-sftp-chroot-jail/
@@ -58,6 +58,11 @@ RELEASE="2015-06-27"
 # - TESTED on Ubuntu 12.04 LTS
 # Forked from: https://github.com/pmenhart/make_chroot_jail
 #
+
+#
+# ::TO-DO:: In case I forget
+# - change shell to /bin/bash (remove chroot-shell)
+# - test for missing apps and non-interactive install the lacking ones
 
 # path to sshd's config file: needed for automatic detection of the locaten of
 # the sftp-server binary
