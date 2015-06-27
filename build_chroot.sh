@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # (c) Copyright by Wolfgang Fuschlberger
 #
@@ -15,7 +15,8 @@
 #####################################################################
 
 # first Release: 2004-07-30
-RELEASE="2008-04-26"
+# RELEASE="2008-04-26"
+RELEASE="2015-06-27"
 #
 # The latest version of the script is available at
 #   http://www.fuschlberger.net/programs/ssh-scp-sftp-chroot-jail/
@@ -49,6 +50,14 @@ RELEASE="2008-04-26"
 # Original: http://www.devcu.com/forums/topic/560-chrootjail-users-for-sshscp-ubuntu-1204/
 # Based on http://www.fuschlberger.net/programs/ssh-scp-sftp-chroot-jail/
 #####################################################################
+
+#
+# Modifiied by jackofalltrades78:
+# - added APPS: git svn mysql
+#
+# - TESTED on Ubuntu 12.04 LTS
+# Forked from: https://github.com/pmenhart/make_chroot_jail
+#
 
 # path to sshd's config file: needed for automatic detection of the locaten of
 # the sftp-server binary
@@ -123,15 +132,15 @@ fi
 
 # Specify the apps you want to copy to the jail
 if [ "$DISTRO" = SUSE ]; then
-  APPS="/bin/bash /bin/cp /usr/bin/dircolors /bin/ls /bin/mkdir /bin/mv /bin/rm /bin/rmdir /bin/sh /bin/su /usr/bin/groups /usr/bin/id /usr/bin/netcat /usr/bin/rsync /usr/bin/ssh /usr/bin/scp /sbin/unix_chkpwd"
+  APPS="/bin/bash /bin/cp /usr/bin/dircolors /bin/ls /bin/mkdir /bin/mv /bin/rm /bin/rmdir /bin/sh /bin/su /usr/bin/groups /usr/bin/id /usr/bin/netcat /usr/bin/rsync /usr/bin/ssh /usr/bin/scp /sbin/unix_chkpwd /usr/bin/git /usr/bin/svn /usr/bin/mysql"
 elif [ "$DISTRO" = FEDORA ]; then
-  APPS="/bin/bash /bin/cp /usr/bin/dircolors /bin/ls /bin/mkdir /bin/mv /bin/rm /bin/rmdir /bin/sh /bin/su /usr/bin/groups /usr/bin/id /usr/bin/nc /usr/bin/rsync /usr/bin/ssh /usr/bin/scp /sbin/unix_chkpwd"
+  APPS="/bin/bash /bin/cp /usr/bin/dircolors /bin/ls /bin/mkdir /bin/mv /bin/rm /bin/rmdir /bin/sh /bin/su /usr/bin/groups /usr/bin/id /usr/bin/nc /usr/bin/rsync /usr/bin/ssh /usr/bin/scp /sbin/unix_chkpwd /usr/bin/git /usr/bin/svn /usr/bin/mysql"
 elif [ "$DISTRO" = REDHAT ]; then
-  APPS="/bin/bash /bin/cp /usr/bin/dircolors /bin/ls /bin/mkdir /bin/mv /bin/rm /bin/rmdir /bin/sh /bin/su /usr/bin/groups /usr/bin/id /usr/bin/nc /usr/bin/rsync /usr/bin/ssh /usr/bin/scp /sbin/unix_chkpwd"
+  APPS="/bin/bash /bin/cp /usr/bin/dircolors /bin/ls /bin/mkdir /bin/mv /bin/rm /bin/rmdir /bin/sh /bin/su /usr/bin/groups /usr/bin/id /usr/bin/nc /usr/bin/rsync /usr/bin/ssh /usr/bin/scp /sbin/unix_chkpwd /usr/bin/git /usr/bin/svn /usr/bin/mysql"
 elif [ "$DISTRO" = DEBIAN ]; then
-  APPS="/bin/bash /bin/cp /usr/bin/dircolors /bin/ls /bin/mkdir /bin/mv /bin/rm /bin/rmdir /bin/sh /bin/su /usr/bin/groups /usr/bin/id /usr/bin/rsync /usr/bin/ssh /usr/bin/scp /sbin/unix_chkpwd /bin/cat /bin/more /usr/bin/less /usr/bin/nano"
+  APPS="/bin/bash /bin/cp /usr/bin/dircolors /bin/ls /bin/mkdir /bin/mv /bin/rm /bin/rmdir /bin/sh /bin/su /usr/bin/groups /usr/bin/id /usr/bin/rsync /usr/bin/ssh /usr/bin/scp /sbin/unix_chkpwd /bin/cat /bin/more /usr/bin/less /usr/bin/nano /usr/bin/git /usr/bin/svn /usr/bin/mysql"
 else
-  APPS="/bin/bash /bin/cp /usr/bin/dircolors /bin/ls /bin/mkdir /bin/mv /bin/rm /bin/rmdir /bin/sh /bin/su /usr/bin/groups /usr/bin/id /usr/bin/rsync /usr/bin/ssh /usr/bin/scp /usr/sbin/unix_chkpwd"
+  APPS="/bin/bash /bin/cp /usr/bin/dircolors /bin/ls /bin/mkdir /bin/mv /bin/rm /bin/rmdir /bin/sh /bin/su /usr/bin/groups /usr/bin/id /usr/bin/rsync /usr/bin/ssh /usr/bin/scp /usr/sbin/unix_chkpwd /usr/bin/git /usr/bin/svn /usr/bin/mysql"
 fi
 
 # Check existence of necessary files
