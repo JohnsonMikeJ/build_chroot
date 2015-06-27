@@ -137,15 +137,15 @@ fi
 
 # Specify the apps you want to copy to the jail
 if [ "$DISTRO" = SUSE ]; then
-  APPS="/bin/bash /bin/cp /usr/bin/dircolors /usr/bin/clear /bin/ls /bin/mkdir /bin/mv /bin/rm /bin/rmdir /bin/sh /bin/su /usr/bin/groups /usr/bin/id /usr/bin/netcat /usr/bin/rsync /usr/bin/ssh /usr/bin/scp /sbin/unix_chkpwd /usr/bin/git /usr/bin/svn /usr/bin/mysql"
+  APPS="/bin/bash /bin/cp /usr/bin/dircolors /usr/bin/clear /bin/ls /bin/mkdir /bin/mv /bin/rm /bin/rmdir /bin/sh /bin/su /usr/bin/groups /usr/bin/id /usr/bin/netcat /usr/bin/rsync /usr/bin/ssh /usr/bin/scp /sbin/unix_chkpwd /usr/bin/git /usr/bin/svn /usr/bin/mysql /usr/bin/curl"
 elif [ "$DISTRO" = FEDORA ]; then
-  APPS="/bin/bash /bin/cp /usr/bin/dircolors /usr/bin/clear /bin/ls /bin/mkdir /bin/mv /bin/rm /bin/rmdir /bin/sh /bin/su /usr/bin/groups /usr/bin/id /usr/bin/nc /usr/bin/rsync /usr/bin/ssh /usr/bin/scp /sbin/unix_chkpwd /usr/bin/git /usr/bin/svn /usr/bin/mysql"
+  APPS="/bin/bash /bin/cp /usr/bin/dircolors /usr/bin/clear /bin/ls /bin/mkdir /bin/mv /bin/rm /bin/rmdir /bin/sh /bin/su /usr/bin/groups /usr/bin/id /usr/bin/nc /usr/bin/rsync /usr/bin/ssh /usr/bin/scp /sbin/unix_chkpwd /usr/bin/git /usr/bin/svn /usr/bin/mysql /usr/bin/curl"
 elif [ "$DISTRO" = REDHAT ]; then
-  APPS="/bin/bash /bin/cp /usr/bin/dircolors /usr/bin/clear /bin/ls /bin/mkdir /bin/mv /bin/rm /bin/rmdir /bin/sh /bin/su /usr/bin/groups /usr/bin/id /usr/bin/nc /usr/bin/rsync /usr/bin/ssh /usr/bin/scp /sbin/unix_chkpwd /usr/bin/git /usr/bin/svn /usr/bin/mysql"
+  APPS="/bin/bash /bin/cp /usr/bin/dircolors /usr/bin/clear /bin/ls /bin/mkdir /bin/mv /bin/rm /bin/rmdir /bin/sh /bin/su /usr/bin/groups /usr/bin/id /usr/bin/nc /usr/bin/rsync /usr/bin/ssh /usr/bin/scp /sbin/unix_chkpwd /usr/bin/git /usr/bin/svn /usr/bin/mysql /usr/bin/curl"
 elif [ "$DISTRO" = DEBIAN ]; then
-  APPS="/bin/bash /bin/cp /usr/bin/dircolors /usr/bin/clear /bin/ls /bin/mkdir /bin/mv /bin/rm /bin/rmdir /bin/sh /bin/su /usr/bin/groups /usr/bin/id /usr/bin/rsync /usr/bin/ssh /usr/bin/scp /sbin/unix_chkpwd /bin/cat /bin/more /usr/bin/less /usr/bin/nano /usr/bin/git /usr/bin/svn /usr/bin/mysql"
+  APPS="/bin/bash /bin/cp /usr/bin/dircolors /usr/bin/clear /bin/ls /bin/mkdir /bin/mv /bin/rm /bin/rmdir /bin/sh /bin/su /usr/bin/groups /usr/bin/id /usr/bin/rsync /usr/bin/ssh /usr/bin/scp /sbin/unix_chkpwd /bin/cat /bin/more /usr/bin/less /usr/bin/nano /usr/bin/git /usr/bin/svn /usr/bin/mysql /usr/bin/curl"
 else
-  APPS="/bin/bash /bin/cp /usr/bin/dircolors /usr/bin/clear /bin/ls /bin/mkdir /bin/mv /bin/rm /bin/rmdir /bin/sh /bin/su /usr/bin/groups /usr/bin/id /usr/bin/rsync /usr/bin/ssh /usr/bin/scp /usr/sbin/unix_chkpwd /usr/bin/git /usr/bin/svn /usr/bin/mysql"
+  APPS="/bin/bash /bin/cp /usr/bin/dircolors /usr/bin/clear /bin/ls /bin/mkdir /bin/mv /bin/rm /bin/rmdir /bin/sh /bin/su /usr/bin/groups /usr/bin/id /usr/bin/rsync /usr/bin/ssh /usr/bin/scp /usr/sbin/unix_chkpwd /usr/bin/git /usr/bin/svn /usr/bin/mysql /usr/bin/curl"
 fi
 
 # Check existence of necessary files
@@ -259,7 +259,7 @@ fi
 # we have to trust that root knows what she is doing when saying 'yes'
 if ( id $CHROOT_USERNAME > /dev/null 2>&1 ) ; then {
   echo -n "User $CHROOT_USERNAME exists. "
-  if [ -d $JAILPATH/home/$CHROOT_USERNAME ] ; then
+  if [ -d $JAILPATH/users/$CHROOT_USERNAME ] ; then
     echo "Already jailed. Exiting...."
     exit 1
   fi
@@ -288,7 +288,7 @@ fi
 cd ${JAILPATH}
 
 # Create directories in jail that do not exist yet
-JAILDIRS="dev etc etc/pam.d bin home sbin usr usr/bin usr/lib"
+JAILDIRS="dev etc etc/pam.d bin users sbin usr usr/bin usr/lib"
 for directory in $JAILDIRS ; do
   if [ ! -d "$JAILPATH/$directory" ] ; then
     mkdir $JAILPATH/"$directory"
@@ -307,6 +307,7 @@ echo
 #fi
 
 # Creating necessary devices
+[ -r $JAILPATH/dev/random ] || mknod $JAILPATH/dev/random c 1 8
 [ -r $JAILPATH/dev/urandom ] || mknod $JAILPATH/dev/urandom c 1 9
 [ -r $JAILPATH/dev/null ]    || mknod -m 666 $JAILPATH/dev/null    c 1 3
 [ -r $JAILPATH/dev/zero ]    || mknod -m 666 $JAILPATH/dev/zero    c 1 5
@@ -322,7 +323,7 @@ echo "Modifying /etc/sudoers"
 echo "$CHROOT_USERNAME       ALL=NOPASSWD: `which chroot`, /bin/su - $CHROOT_USERNAME" >> /etc/sudoers
 
 # Define HomeDir for simple referencing
-HOMEDIR="$JAILPATH/home/$CHROOT_USERNAME"
+HOMEDIR="$JAILPATH/users/$CHROOT_USERNAME"
 
 # Create new account, setting $SHELL to the above created script and
 # $HOME to $JAILPATH/home/*
