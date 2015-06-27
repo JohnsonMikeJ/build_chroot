@@ -31,7 +31,7 @@ RELEASE="2008-04-26"
 #
 # Features:
 # - enable scp and sftp in the chroot-jail
-# - use one directory (default /home/jail/) as chroot for all users
+# - use one directory (default /var/chroot/) as chroot for all users
 # - create new accounts
 # - move existing accounts to chroot
 #####################################################################
@@ -82,7 +82,7 @@ if [ -z "$1" ] ; then
   echo "or specify the chroot-shell file and path where the jail should be located:"
   echo "-> $0 username [/path/to/chroot-shell [/path/to/jail]]"
   echo "Default shell       = /bin/chroot-shell"
-  echo "Default chroot-path = /home/jail"
+  echo "Default chroot-path = /var/chroot"
   echo "-------------------------------------------------------------"
   echo
   echo "Updating files in the chroot-jail:"
@@ -91,7 +91,7 @@ if [ -z "$1" ] ; then
   echo
   echo "To uninstall:"
   echo " # userdel \$USER"
-  echo " # rm -rf /home/jail"
+  echo " # rm -rf /var/chroot"
   echo " (this deletes all Users' files!)"
   echo " # rm -f /bin/chroot-shell"
   echo " manually delete the User's line from /etc/sudoers"
@@ -137,15 +137,15 @@ fi
 
 # Specify the apps you want to copy to the jail
 if [ "$DISTRO" = SUSE ]; then
-  APPS="/bin/bash /bin/cp /usr/bin/dircolors /bin/ls /bin/mkdir /bin/mv /bin/rm /bin/rmdir /bin/sh /bin/su /usr/bin/groups /usr/bin/id /usr/bin/netcat /usr/bin/rsync /usr/bin/ssh /usr/bin/scp /sbin/unix_chkpwd /usr/bin/git /usr/bin/svn /usr/bin/mysql"
+  APPS="/bin/bash /bin/cp /usr/bin/dircolors /usr/bin/clear /bin/ls /bin/mkdir /bin/mv /bin/rm /bin/rmdir /bin/sh /bin/su /usr/bin/groups /usr/bin/id /usr/bin/netcat /usr/bin/rsync /usr/bin/ssh /usr/bin/scp /sbin/unix_chkpwd /usr/bin/git /usr/bin/svn /usr/bin/mysql"
 elif [ "$DISTRO" = FEDORA ]; then
-  APPS="/bin/bash /bin/cp /usr/bin/dircolors /bin/ls /bin/mkdir /bin/mv /bin/rm /bin/rmdir /bin/sh /bin/su /usr/bin/groups /usr/bin/id /usr/bin/nc /usr/bin/rsync /usr/bin/ssh /usr/bin/scp /sbin/unix_chkpwd /usr/bin/git /usr/bin/svn /usr/bin/mysql"
+  APPS="/bin/bash /bin/cp /usr/bin/dircolors /usr/bin/clear /bin/ls /bin/mkdir /bin/mv /bin/rm /bin/rmdir /bin/sh /bin/su /usr/bin/groups /usr/bin/id /usr/bin/nc /usr/bin/rsync /usr/bin/ssh /usr/bin/scp /sbin/unix_chkpwd /usr/bin/git /usr/bin/svn /usr/bin/mysql"
 elif [ "$DISTRO" = REDHAT ]; then
-  APPS="/bin/bash /bin/cp /usr/bin/dircolors /bin/ls /bin/mkdir /bin/mv /bin/rm /bin/rmdir /bin/sh /bin/su /usr/bin/groups /usr/bin/id /usr/bin/nc /usr/bin/rsync /usr/bin/ssh /usr/bin/scp /sbin/unix_chkpwd /usr/bin/git /usr/bin/svn /usr/bin/mysql"
+  APPS="/bin/bash /bin/cp /usr/bin/dircolors /usr/bin/clear /bin/ls /bin/mkdir /bin/mv /bin/rm /bin/rmdir /bin/sh /bin/su /usr/bin/groups /usr/bin/id /usr/bin/nc /usr/bin/rsync /usr/bin/ssh /usr/bin/scp /sbin/unix_chkpwd /usr/bin/git /usr/bin/svn /usr/bin/mysql"
 elif [ "$DISTRO" = DEBIAN ]; then
-  APPS="/bin/bash /bin/cp /usr/bin/dircolors /bin/ls /bin/mkdir /bin/mv /bin/rm /bin/rmdir /bin/sh /bin/su /usr/bin/groups /usr/bin/id /usr/bin/rsync /usr/bin/ssh /usr/bin/scp /sbin/unix_chkpwd /bin/cat /bin/more /usr/bin/less /usr/bin/nano /usr/bin/git /usr/bin/svn /usr/bin/mysql"
+  APPS="/bin/bash /bin/cp /usr/bin/dircolors /usr/bin/clear /bin/ls /bin/mkdir /bin/mv /bin/rm /bin/rmdir /bin/sh /bin/su /usr/bin/groups /usr/bin/id /usr/bin/rsync /usr/bin/ssh /usr/bin/scp /sbin/unix_chkpwd /bin/cat /bin/more /usr/bin/less /usr/bin/nano /usr/bin/git /usr/bin/svn /usr/bin/mysql"
 else
-  APPS="/bin/bash /bin/cp /usr/bin/dircolors /bin/ls /bin/mkdir /bin/mv /bin/rm /bin/rmdir /bin/sh /bin/su /usr/bin/groups /usr/bin/id /usr/bin/rsync /usr/bin/ssh /usr/bin/scp /usr/sbin/unix_chkpwd /usr/bin/git /usr/bin/svn /usr/bin/mysql"
+  APPS="/bin/bash /bin/cp /usr/bin/dircolors /usr/bin/clear /bin/ls /bin/mkdir /bin/mv /bin/rm /bin/rmdir /bin/sh /bin/su /usr/bin/groups /usr/bin/id /usr/bin/rsync /usr/bin/ssh /usr/bin/scp /usr/sbin/unix_chkpwd /usr/bin/git /usr/bin/svn /usr/bin/mysql"
 fi
 
 # Check existence of necessary files
@@ -249,7 +249,7 @@ fi
 if ! [ -z "$3" ] ; then
   JAILPATH=$3
 else
-  JAILPATH=/home/jail
+  JAILPATH=/var/chroot
 fi
 
 # Exit if user already exists
@@ -374,7 +374,7 @@ grep -e "^$CHROOT_USERNAME:" /etc/passwd | \
 # account's group to etc/group
 grep -e "^$CHROOT_USERNAME:" /etc/group >> ${JAILPATH}/etc/group
 
-# write the user's line from /etc/shadow to /home/jail/etc/shadow
+# write the user's line from /etc/shadow to /var/chroot/etc/shadow
 grep -e "^$CHROOT_USERNAME:" /etc/shadow >> ${JAILPATH}/etc/shadow
 chmod 600 ${JAILPATH}/etc/shadow
 
@@ -476,7 +476,7 @@ elif [ "$DISTRO" = DEBIAN ]; then
   else
     cp /lib/x86_64-linux-gnu/libnss_compat.so.2 /lib/x86_64-linux-gnu/libnsl.so.1 /lib/x86_64-linux-gnu/libnss_files.so.2 /lib/x86_64-linux-gnu/libcap.so.2 /lib/x86_64-linux-gnu/libnss_dns.so.2 ${JAILPATH}/lib/
   fi
-  # needed for less and nano
+  # needed for less and nano and clear
   cp -ar /lib/terminfo ${JAILPATH}/lib/
 else
   cp /lib/libnss_compat.so.2 /lib/libnsl.so.1 /lib/libnss_files.so.2 /lib/libcap.so.1 /lib/libnss_dns.so.2 ${JAILPATH}/lib/
