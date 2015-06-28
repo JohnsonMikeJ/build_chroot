@@ -580,8 +580,8 @@ if [ -d /usr/lib/x86_64-linux-gnu ] ; then
 fi
 
 # and yet more shit to use git...
-if [ -d ${JAILPATH}/ssl/certs ] ; then
-  mkdir -p ${JAILPATH}/ssl
+if [ ! -d ${JAILPATH}/etc/ssl ] ; then
+  mkdir -p ${JAILPATH}/etc/ssl
 fi
 cp -p -R /etc/ssl/certs ${JAILPATH}/etc/ssl/
 
