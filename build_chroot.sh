@@ -579,6 +579,9 @@ if [ -d /usr/lib/x86_64-linux-gnu ] ; then
   cp -p /usr/lib/x86_64-linux-gnu/libcurl-gnutls* ${JAILPATH}/usr/lib/x86_64-linux-gnu/
 fi
 
+# and yet more shit to use git...
+cp -p -R /etc/ssl/certs ${JAILPATH}/etc/
+
 # well we kinda need this if we need git or svn or scp or anythign...
 cp -p /etc/resolv.conf ${JAILPATH}/etc/
 cp -p /etc/hosts ${JAILPATH}/etc/
