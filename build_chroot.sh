@@ -97,11 +97,6 @@ NOW=$(date +"%m-%d-%Y.%s")
 # Forked from: https://github.com/pmenhart/make_chroot_jail
 #
 
-#
-# ::TO-DO:: In case I forget
-# - change shell to /bin/bash (remove chroot-shell)
-# - test for missing apps and non-interactive install the lacking ones
-
 # path to sshd's config file: needed for automatic detection of the locaten of
 # the sftp-server binary
 SSHD_CONFIG="/etc/ssh/sshd_config"
