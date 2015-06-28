@@ -175,15 +175,15 @@ fi
 
 # Specify the apps you want to copy to the jail
 if [ "$DISTRO" = SUSE ]; then
-  APPS="/bin/bash /bin/cp /usr/bin/dircolors /usr/bin/clear /bin/ls /bin/mkdir /bin/mv /bin/rm /bin/rmdir /bin/sh /bin/su /usr/bin/groups /usr/bin/id /usr/bin/netcat /usr/bin/rsync /usr/bin/ssh /usr/bin/scp /sbin/unix_chkpwd /usr/bin/git /usr/bin/svn /usr/bin/mysql /usr/bin/curl"
+  APPS="/usr/bin/vim /bin/bash /bin/cp /usr/bin/dircolors /usr/bin/clear /bin/ls /bin/mkdir /bin/mv /bin/rm /bin/rmdir /bin/sh /bin/su /usr/bin/groups /usr/bin/id /usr/bin/netcat /usr/bin/rsync /usr/bin/ssh /usr/bin/scp /sbin/unix_chkpwd /usr/bin/git /usr/bin/svn /usr/bin/mysql /usr/bin/curl"
 elif [ "$DISTRO" = FEDORA ]; then
-  APPS="/bin/bash /bin/cp /usr/bin/dircolors /usr/bin/clear /bin/ls /bin/mkdir /bin/mv /bin/rm /bin/rmdir /bin/sh /bin/su /usr/bin/groups /usr/bin/id /usr/bin/nc /usr/bin/rsync /usr/bin/ssh /usr/bin/scp /sbin/unix_chkpwd /usr/bin/git /usr/bin/svn /usr/bin/mysql /usr/bin/curl"
+  APPS="/usr/bin/vim /bin/bash /bin/cp /usr/bin/dircolors /usr/bin/clear /bin/ls /bin/mkdir /bin/mv /bin/rm /bin/rmdir /bin/sh /bin/su /usr/bin/groups /usr/bin/id /usr/bin/nc /usr/bin/rsync /usr/bin/ssh /usr/bin/scp /sbin/unix_chkpwd /usr/bin/git /usr/bin/svn /usr/bin/mysql /usr/bin/curl"
 elif [ "$DISTRO" = REDHAT ]; then
-  APPS="/bin/bash /bin/cp /usr/bin/dircolors /usr/bin/clear /bin/ls /bin/mkdir /bin/mv /bin/rm /bin/rmdir /bin/sh /bin/su /usr/bin/groups /usr/bin/id /usr/bin/nc /usr/bin/rsync /usr/bin/ssh /usr/bin/scp /sbin/unix_chkpwd /usr/bin/git /usr/bin/svn /usr/bin/mysql /usr/bin/curl"
+  APPS="/usr/bin/vim /bin/bash /bin/cp /usr/bin/dircolors /usr/bin/clear /bin/ls /bin/mkdir /bin/mv /bin/rm /bin/rmdir /bin/sh /bin/su /usr/bin/groups /usr/bin/id /usr/bin/nc /usr/bin/rsync /usr/bin/ssh /usr/bin/scp /sbin/unix_chkpwd /usr/bin/git /usr/bin/svn /usr/bin/mysql /usr/bin/curl"
 elif [ "$DISTRO" = DEBIAN ]; then
-  APPS="/bin/bash /bin/cp /usr/bin/dircolors /usr/bin/clear /bin/ls /bin/mkdir /bin/mv /bin/rm /bin/rmdir /bin/sh /bin/su /usr/bin/groups /usr/bin/id /usr/bin/rsync /usr/bin/ssh /usr/bin/scp /sbin/unix_chkpwd /bin/cat /bin/more /usr/bin/less /usr/bin/nano /usr/bin/git /usr/bin/svn /usr/bin/mysql /usr/bin/curl"
+  APPS="/usr/bin/vim /bin/bash /bin/cp /usr/bin/dircolors /usr/bin/clear /bin/ls /bin/mkdir /bin/mv /bin/rm /bin/rmdir /bin/sh /bin/su /usr/bin/groups /usr/bin/id /usr/bin/rsync /usr/bin/ssh /usr/bin/scp /sbin/unix_chkpwd /bin/cat /bin/more /usr/bin/less /usr/bin/nano /usr/bin/git /usr/bin/svn /usr/bin/mysql /usr/bin/curl"
 else
-  APPS="/bin/bash /bin/cp /usr/bin/dircolors /usr/bin/clear /bin/ls /bin/mkdir /bin/mv /bin/rm /bin/rmdir /bin/sh /bin/su /usr/bin/groups /usr/bin/id /usr/bin/rsync /usr/bin/ssh /usr/bin/scp /usr/sbin/unix_chkpwd /usr/bin/git /usr/bin/svn /usr/bin/mysql /usr/bin/curl"
+  APPS="/usr/bin/vim /bin/bash /bin/cp /usr/bin/dircolors /usr/bin/clear /bin/ls /bin/mkdir /bin/mv /bin/rm /bin/rmdir /bin/sh /bin/su /usr/bin/groups /usr/bin/id /usr/bin/rsync /usr/bin/ssh /usr/bin/scp /usr/sbin/unix_chkpwd /usr/bin/git /usr/bin/svn /usr/bin/mysql /usr/bin/curl"
 fi
 
 # Check existence of necessary files
@@ -360,15 +360,14 @@ if [ "$1" != "update" ]; then
 # Modifiy /etc/sudoers to enable chroot-ing for users
 # must be removed by hand if account is deleted
 
-if [ -d "/etc/sudoers.d" ]; then
+if [ -d /etc/sudoers.d ]; then
   echo "Using /etc/sudoers.d/"
-  echo "$CHROOT_USERNAME       ALL=NOPASSWD: `which chroot`, /bin/su - $CHROOT_USERNAME" >> "/etc/sudoers.d/$CHROOT_USERNAME"
-  #echo "Setting permissions to 0440 on /etc/sudoers.d/$CHROOT_USERNAME"
-  chmod 0440 "/etc/sudoers.d/$CHROOT_USERNAME"
+  echo "$CHROOT_USERNAME       ALL=NOPASSWD: `which chroot`, /bin/su - $CHROOT_USERNAME" > /etc/sudoers.d/$CHROOT_USERNAME
+  chmod 0440 /etc/sudoers.d/$CHROOT_USERNAME
 else
   echo "Modifying /etc/sudoers"  
   echo "Backing up /etc/sudoers"
-  cp /etc/sudoers "/etc/sudoers.$NOW"
+  cp /etc/sudoers /etc/sudoers.$NOW
   echo "$CHROOT_USERNAME       ALL=NOPASSWD: `which chroot`, /bin/su - $CHROOT_USERNAME" >> /etc/sudoers
 fi
 
@@ -564,14 +563,18 @@ if [ -d /usr/share/git-core ] ; then
   if [ ! -d ${JAILPATH}/usr/share ] ; then
     mkdir -p ${JAILPATH}/usr/share
   fi
-  cp -p -R /usr/share/git-core ${JAILPATH}/usr/share/
+  cp -pR /usr/share/git-core ${JAILPATH}/usr/share/
 fi
+
 if [ -d /usr/lib/git-core ] ; then
   if [ ! -d ${JAILPATH}/usr/lib ] ; then
     mkdir -p ${JAILPATH}/usr/lib
   fi
-  cp -p -R /usr/lib/git-core ${JAILPATH}/usr/lib/
+  cp -pR /usr/lib/git-core ${JAILPATH}/usr/lib/
 fi
+
+# required if curl is compiled with --with-gnutls
+# ldd misses it and its reuired for git
 if [ -d /usr/lib/x86_64-linux-gnu ] ; then
   if [ ! -d ${JAILPATH}/usr/lib/x86_64-linux-gnu ] ; then
     mkdir -p ${JAILPATH}/usr/lib/x86_64-linux-gnu
@@ -580,14 +583,20 @@ if [ -d /usr/lib/x86_64-linux-gnu ] ; then
 fi
 
 # and yet more shit to use git...
-if [ ! -d ${JAILPATH}/etc/ssl ] ; then
-  mkdir -p ${JAILPATH}/etc/ssl
+# SSL CA cert
+if [ ! -f ${JAILPATH}/etc/ssl/certs/ca-certificates.crt ] ; then
+  if [ ! -d ${JAILPATH}/etc/ssl/certs/ ] ; then 
+    mkdir -p ${JAILPATH}/etc/ssl/certs
+  fi
+  cp -p /etc/ssl/certs/ca-certificates.crt ${JAILPATH}/etc/ssl/certs/
 fi
-cp -p -R /etc/ssl/certs ${JAILPATH}/etc/ssl/
 
-# well we kinda need this if we need git or svn or scp or anythign...
+# well we kinda need this if we need git or svn or scp or anything...
 cp -p /etc/resolv.conf ${JAILPATH}/etc/
 cp -p /etc/hosts ${JAILPATH}/etc/
+# and this for svn
+cp -p /etc/nsswitch.conf ${JAILPATH}/etc/nsswitch.conf
+cp -p /etc/host.conf ${JAILPATH}/etc/host.conf
 
 # Don't give more permissions than necessary
 chown root.root ${JAILPATH}/bin/su
