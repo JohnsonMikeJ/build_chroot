@@ -43,6 +43,8 @@
 
 # first Release: 2004-07-30
 RELEASE="2008-04-26"
+NOW=$(date +"%m-%d-%Y.%s")
+
 
 #
 # The latest version of the script is available at
@@ -306,6 +308,7 @@ else
   echo '#!/bin/sh' > $SHELL
   echo "`which sudo` `which chroot` $JAILPATH /bin/su - \$USER" \"\$@\" >> $SHELL
   chmod 755 $SHELL
+  cp $SHELL $JAILPATH$SHELL
 fi
 
 # make common jail for everybody if inexistent
@@ -349,17 +352,15 @@ if [ "$1" != "update" ]; then
 # Modifiy /etc/sudoers to enable chroot-ing for users
 # must be removed by hand if account is deleted
 
-echo "Modifying /etc/sudoers"
-echo "Backing up /etc/sudoers"
-cp /etc/sudoers /etc/sudoers.bak
-
 if [ -d "/etc/sudoers.d" ]; then
-  sed -i 's/#includedir \/etc\/sudoers\.d/includedir \/etc\/sudoers\.d/g' /etc/sudoers
-  echo "Addinng '$CHROOT_USERNAME' to /etc/sudoers.d/$CHROOT_USERNAME"
+  echo "Using /etc/sudoers.d/"
   echo "$CHROOT_USERNAME       ALL=NOPASSWD: `which chroot`, /bin/su - $CHROOT_USERNAME" >> "/etc/sudoers.d/$CHROOT_USERNAME"
-  echo "Setting permissions to 0440 on /etc/sudoers.d/$CHROOT_USERNAME"
-  echo "chmod 0440 /etc/sudoers.d/$CHROOT_USERNAME"
+  #echo "Setting permissions to 0440 on /etc/sudoers.d/$CHROOT_USERNAME"
+  chmod 0440 "/etc/sudoers.d/$CHROOT_USERNAME"
 else
+  echo "Modifying /etc/sudoers"  
+  echo "Backing up /etc/sudoers"
+  cp /etc/sudoers "/etc/sudoers.$NOW"
   echo "$CHROOT_USERNAME       ALL=NOPASSWD: `which chroot`, /bin/su - $CHROOT_USERNAME" >> /etc/sudoers
 fi
 
@@ -539,8 +540,9 @@ cp /etc/pam.d/* ${JAILPATH}/etc/pam.d/
 echo "Copying PAM-Modules to jail"
 cp -r /lib/x86_64-linux-gnu/security ${JAILPATH}/lib/
 # this is needed for Ubuntu 8.04, but will not hurt on 12.04 neither
-cp -r /lib/security ${JAILPATH}/lib/
-
+if [ -d /lib/security ] ; then
+  cp -r /lib/security ${JAILPATH}/lib/
+fi
 # ...and something else useful for PAM
 cp -r /etc/security ${JAILPATH}/etc/
 cp /etc/login.defs ${JAILPATH}/etc/
@@ -548,6 +550,26 @@ cp /etc/login.defs ${JAILPATH}/etc/
 if [ -f /etc/DIR_COLORS ] ; then
   cp /etc/DIR_COLORS ${JAILPATH}/etc/
 fi 
+
+# ...and required crap for git
+if [ -d /usr/share/git-core ] ; then
+  if [ ! -d ${JAILPATH}/usr/share ] ; then
+    mkdir -p ${JAILPATH}/usr/share
+  fi
+  cp -p -R /usr/share/git-core ${JAILPATH}/usr/share/
+fi
+if [ -d /usr/lib/git-core ] ; then
+  if [ ! -d ${JAILPATH}/usr/lib ] ; then
+    mkdir -p ${JAILPATH}/usr/lib
+  fi
+  cp -p -R /usr/lib/git-core ${JAILPATH}/usr/lib/
+fi
+if [ -d /usr/lib/x86_64-linux-gnu ] ; then
+  if [ ! -d ${JAILPATH}/usr/lib/x86_64-linux-gnu ] ; then
+    mkdir -p ${JAILPATH}/usr/lib/x86_64-linux-gnu
+  fi
+  cp -p /usr/lib/x86_64-linux-gnu/libcurl-gnutls* ${JAILPATH}/usr/lib/x86_64-linux-gnu/
+fi
 
 # Don't give more permissions than necessary
 chown root.root ${JAILPATH}/bin/su
