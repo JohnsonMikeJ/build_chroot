@@ -21,6 +21,7 @@
 #
 # Under Linux, ping needs to run as root (because it needs to bind a raw IP socket; ordinary users can only do UDP and TCP). It's designed to be setuid root.
 # RE: http://superuser.com/questions/284381/ping-not-working-in-a-chroot
+#
 
 #while getopts a:u:p:s:c:f option
 #do
