@@ -15,12 +15,13 @@
 #####################################################################
 
 #
-# if you need ping:
+# if you need ping (for testing):
 #
 # chown root:root bin/ping; chmod u+srwx,go=rx bin/ping
 #
 # Under Linux, ping needs to run as root (because it needs to bind a raw IP socket; ordinary users can only do UDP and TCP). It's designed to be setuid root.
 # RE: http://superuser.com/questions/284381/ping-not-working-in-a-chroot
+#
 
 #while getopts a:u:p:s:c:f option
 #do
