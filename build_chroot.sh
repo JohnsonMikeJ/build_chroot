@@ -580,7 +580,10 @@ if [ -d /usr/lib/x86_64-linux-gnu ] ; then
 fi
 
 # and yet more shit to use git...
-cp -p -R /etc/ssl/certs ${JAILPATH}/etc/
+if [ -d ${JAILPATH}/ssl/certs ] ; then
+  mkdir -p ${JAILPATH}/ssl
+fi
+cp -p -R /etc/ssl/certs ${JAILPATH}/etc/ssl/
 
 # well we kinda need this if we need git or svn or scp or anythign...
 cp -p /etc/resolv.conf ${JAILPATH}/etc/
