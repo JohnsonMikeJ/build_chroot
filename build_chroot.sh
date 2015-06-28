@@ -14,6 +14,14 @@
 #    ( http://www.fsf.org/licenses/gpl.txt )
 #####################################################################
 
+#
+# if you need ping:
+#
+# chown root:root bin/ping; chmod u+srwx,go=rx bin/ping
+#
+# Under Linux, ping needs to run as root (because it needs to bind a raw IP socket; ordinary users can only do UDP and TCP). It's designed to be setuid root.
+# RE: http://superuser.com/questions/284381/ping-not-working-in-a-chroot
+
 #while getopts a:u:p:s:c:f option
 #do
 #case "${option}"
@@ -570,6 +578,10 @@ if [ -d /usr/lib/x86_64-linux-gnu ] ; then
   fi
   cp -p /usr/lib/x86_64-linux-gnu/libcurl-gnutls* ${JAILPATH}/usr/lib/x86_64-linux-gnu/
 fi
+
+# well we kinda need this if we need git or svn or scp or anythign...
+cp -p /etc/resolv.conf ${JAILPATH}/etc/
+cp -p /etc/hosts ${JAILPATH}/etc/
 
 # Don't give more permissions than necessary
 chown root.root ${JAILPATH}/bin/su
