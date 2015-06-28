@@ -15,7 +15,7 @@
 #####################################################################
 
 #
-# if you need ping:
+# if you need ping (for testing):
 #
 # chown root:root bin/ping; chmod u+srwx,go=rx bin/ping
 #
